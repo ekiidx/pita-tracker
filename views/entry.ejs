@@ -5,15 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pita Tracker</title>
-    <link href="assets/css/main.css" rel="stylesheet" />
+    <link href="/assets/css/main.css" rel="stylesheet" />
 </head>
 
-<body>
-    <div class="header"><a href="/"><img class="cat-logo" src="assets/img/cat-run.gif"></a><h1>Pita Tracker 1.0</h1></div>
+<body class="bg-light">
+    <div class="header card">
+        <div class="logo">
+            <a href="/"><img class="cat-logo" src="/assets/img/cat-run.gif"></a>
+            <h1>Pita Tracker 1.0</h1>
+        </div>
 
-    <button onclick="openBloodModal()">+ Blood</button>
-    <button onclick="openInsulinModal()">+ Insulin</button>
-    <button onclick="openFoodModal()">+ Food</button>
+        <div>
+            <button onclick="openBloodModal()">+ Blood</button>
+            <button onclick="openInsulinModal()">+ Insulin</button>
+            <button onclick="openFoodModal()">+ Food</button>
+        </div>
+    </div>
+
     <!-- Blood Modal -->
     <div id="bloodModal" class="modal">
         <div class="modal-content">
@@ -39,7 +47,7 @@
                 <input type="date" id="date" name="date" required>
                 <label for="time">Time of Measurement</label>
                 <input type="time" id="time" name="time" required>
-                <label for="insulin">Insulin Dose (units)</label>
+                <label for="insulin">Insulin Dose (u)</label>
                 <input type="number" step="0.1" id="insulin" name="insulin">
                 <button type="submit">Submit</button>
                 <button type="button" onclick="closeInsulinModal()">Cancel</button>
@@ -54,30 +62,40 @@
                 <input type="date" id="date" name="date" required>
                 <label for="time">Time of Measurement</label>
                 <input type="time" id="time" name="time" required>
-                <label for="food">Food Amount (in cups)</label>
-                <input type="number" id="food" name="food" min="0" required>
+                <label for="food">Food Amount (cups)</label>
+                <input type="number" id="food" name="food" min="0" step="0.1" required>
                 <button type="submit">Submit</button>
                 <button type="button" onclick="closeFoodModal()">Cancel</button>
             </form>
         </div>
     </div>
 
-    <div>
-        <h2>Today's Entries</h2>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody id="data-body"></tbody>
-        </table>
-    </div>
+   <div class="main-content gap">
+        <div class="entries bg-white">
+            <div class="entries-header"> 
+                <a href="/back"><img class="arrow-left" src="/assets/img/arrow.png"></a>
+                <h2>Today's Entries</h2>
+                <img class="arrow-right" src="/assets/img/arrow.png">
+            </div>
+        
+            <table>
+                <thead>
+                    <tr>
+                        <th style="padding-left: 1.5rem;">Type</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th style="padding-right: 1.5rem;">Amount</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="data-body"></tbody>
+            </table>
+        </div>
 
-    <div><canvas id="bloodChartToday"></canvas></div>
+        <div class="graph-content card">
+            <canvas id="bloodChartToday"></canvas>
+        </div>
+    </div>
 
     <script>
         const yyyyMmDd = "<%= date %>";
@@ -91,10 +109,11 @@
                 data.forEach(row => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${row.source}</td>
+                        <td style="padding-left: 1.5rem;">${row.source}</td>
                         <td>${row.date}</td>
-                        <td>${row.time}</td>
+                        <td style="min-width: 6rem;">${row.time}</td>
                         <td>${row.blood}</td>
+                        <td style="padding-right: 1.5rem; padding-top: .5rem; padding-bottom: .5rem;"><?xml version="1.0"?><svg style="height: .875rem;" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><path d="M16,10a3,3,0,1,0-3-3A3,3,0,0,0,16,10Z"/><path d="M16,19a3,3,0,1,0-3-3A3,3,0,0,0,16,19Z"/><path d="M16,28a3,3,0,1,0-3-3A3,3,0,0,0,16,28Z"/></svg></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -256,7 +275,7 @@
             document.getElementById("foodModal").style.display = "none";
         }
     </script>
-    <script src="assets/js/chartjs.min.js"></script>
-    <script src="assets/js/chartjs-adapter-date-fns.min.js"></script>
+    <script src="/assets/js/chartjs.min.js"></script>
+    <script src="/assets/js/chartjs-adapter-date-fns.min.js"></script>
 </body>
 </html>

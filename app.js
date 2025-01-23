@@ -86,21 +86,21 @@ app.get('/entries/:date', (req, res) => {
 // API GET all entries
 app.get('/api/entries', (req, res) => {
     const queries = [
-        `SELECT id, date, time, blood, 'blood' as source FROM blood`,
-        `SELECT id, date, time, insulin, 'insulin' as source FROM insulin`,
-        `SELECT id, date, time, food, 'food' as source FROM food`
+        `SELECT id, date, time, blood, "🩸 blood" AS source FROM blood`,
+        `SELECT id, date, time, insulin, "💉 insulin" AS source FROM insulin`,
+        `SELECT id, date, time, food, "🍽️ food" AS source FROM food`
     ];
     const combinedQuery = queries.join(' UNION ALL ');
     const finalQuery = `${combinedQuery} ORDER BY date ASC, time ASC`;
     db.all(finalQuery, [], (err, rows) => {
         if (err) {
-            return res.status(500).json({
-                error: err.message
-            });
+            return res.status(500).json({ error: err.message });
         }
+        console.log(rows); // Check if emojis show up here
         res.json(rows);
     });
 });
+
 
 // API GET all entries on specific day
 app.get('/api/entries/:date', (req, res) => {
