@@ -9,7 +9,7 @@ To install and set up the node_modules:
 $ npm install
 ```
 
-Create SQLite database and insert dummy data into tables.
+Create SQLite database and insert dummy data into tables:
 
 ```sh
 $ node insert.js
@@ -19,7 +19,7 @@ $ node insert.js
 
 ### Starting the app
 
-Start the app on localhost.
+Start the app on localhost:
 
 ```sh
 $ node app.js
