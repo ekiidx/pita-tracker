@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Pita Tracker</title>
+      <style>
+         body {
+         font-family: Arial, sans-serif;
+         background-color: #f9f9f9;
+         margin: 20px;
+         }
+         h1 {
+         color: #444;
+         }
+         form {
+         background: #fff;
+         padding: 20px;
+         border-radius: 8px;
+         max-width: 500px;
+         box-shadow: 0 0 10px rgba(0,0,0,0.1);
+         }
+         label {
+         display: block;
+         margin-top: 15px;
+         font-weight: bold;
+         }
+         input, select, textarea {
+         width: 100%;
+         padding: 8px;
+         margin-top: 5px;
+         border-radius: 4px;
+         border: 1px solid #ccc;
+         }
+         button {
+         margin-top: 20px;
+         padding: 10px 15px;
+         background-color: #4CAF50;
+         color: white;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+         }
+         button:hover {
+         background-color: #45a049;
+         }
+         .modal {
+         display: none;
+         position: fixed;
+         top: 0; left: 0;
+         width: 100%; height: 100%;
+         background-color: rgba(0, 0, 0, 0.5);
+         }
+         .modal-content {
+         background-color: white;
+         margin: 10% auto;
+         padding: 20px;
+         width: 300px;
+         border-radius: 5px;
+         }
+      </style>
+   </head>
+   <body>
+      <h1>Pita Tracker 1.0</h1>
+      <!-- Button -->
+      <button onclick="openBloodModal()">+ Blood</button>
+      <button onclick="openInsulinModal()">+ Insulin</button>
+      <button onclick="openFoodModal()">+ Food</button>
+      <!-- Blood Modal -->
+      <div id="bloodModal" class="modal">
+         <div class="modal-content">
+            <form action="/blood" method="POST">
+               <label for="date">Date</label>
+               <input type="date" id="date" name="date" required>
+               <label for="time">Time of Measurement</label>
+               <input type="time" id="time" name="time" required>
+               <label for="blood">Blood Glucose (mg/dL)</label>
+               <input type="number" id="blood" name="blood" min="0" required>
+               <button type="submit">Submit</button>
+               <button type="button" onclick="closeBloodModal()">Cancel</button>
+            </form>
+         </div>
+      </div>
+      <!-- Insulin Modal -->
+      <div id="insulinModal" class="modal">
+         <div class="modal-content">
+            <form action="/insulin" method="POST">
+               <label for="date">Date</label>
+               <input type="date" id="date" name="date" required>
+               <label for="time">Time of Measurement</label>
+               <input type="time" id="time" name="time" required>
+               <label for="insulin">Insulin Dose (units)</label>
+               <input type="number" step="0.1" id="insulin" name="insulin">
+               <button type="submit">Submit</button>
+               <button type="button" onclick="closeInsulinModal()">Cancel</button>
+            </form>
+         </div>
+      </div>
+      <!-- Food Modal -->
+      <div id="foodModal" class="modal">
+         <div class="modal-content">
+            <form action="/food" method="POST">
+               <label for="date">Date</label>
+               <input type="date" id="date" name="date" required>
+               <label for="time">Time of Measurement</label>
+               <input type="time" id="time" name="time" required>
+               <label for="food">Food Amount (in cups)</label>
+               <input type="number" id="food" name="food" min="0" required>
+               <button type="submit">Submit</button>
+               <button type="button" onclick="closeFoodModal()">Cancel</button>
+            </form>
+         </div>
+      </div>
+      <script>
+         function openBloodModal() {
+           document.getElementById("bloodModal").style.display = "block";
+         }
+         function closeBloodModal() {
+           document.getElementById("bloodModal").style.display = "none";
+         }
+           function openInsulinModal() {
+           document.getElementById("insulinModal").style.display = "block";
+         }
+         function closeInsulinModal() {
+           document.getElementById("insulinModal").style.display = "none";
+         }
+           function openFoodModal() {
+           document.getElementById("foodModal").style.display = "block";
+         }
+         function closeFoodModal() {
+           document.getElementById("foodModal").style.display = "none";
+         }
+      </script>
+      <div>
+         <canvas id="bloodChart"></canvas>
+      </div>
+      <div>
+         <canvas id="insulinChart"></canvas>
+      </div>
+      <div>
+         <canvas id="foodChart"></canvas>
+      </div>
+      <div>
+         <h2>Today's Readings</h2>
+         <table border="1">
+            <thead>
+               <tr>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Amount</th>
+               </tr>
+            </thead>
+            <tbody id="data-body"></tbody>
+         </table>
+      </div>
+      <script>
+         fetch('/entries')
+         .then(res => res.json())
+         .then(data => {
+           const tbody = document.getElementById('data-body');
+         
+             data.forEach(row => {
+               const tr = document.createElement('tr');
+               tr.innerHTML = `
+                 <td>${row.source}</td>
+                 <td>${row.date}</td>
+                 <td>${row.time}</td>
+                 <td>${row.blood}</td>
+               `;
+               tbody.appendChild(tr);
+         
+             });
+         })
+         .catch(err => {
+         console.error('Error fetching data:', err);
+         });
+         
+        fetch('/blood')
+           .then(res => res.json())
+           .then(data => {
+               const y = data.map(row => row.blood);
+               const x = data.map(row => row.time);
+         
+               const ctx = document.getElementById('bloodChart').getContext('2d');
+         
+                new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                    labels: x,
+                    datasets: [{
+                      label: 'Blood',
+                      data: y,
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      borderWidth: 1
+                    }]
+                  },
+                  options: {
+                    plugins: {
+                      title: {
+                        display: true,
+                        text: 'Blood Glucose',
+                      }
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+           })
+           .catch(err => {
+             console.error('Error fetching data:', err);
+           });
+         
+           fetch('/insulin')
+           .then(res => res.json())
+           .then(data => {
+             // const tbody = document.getElementById('data-body');
+         
+               const y = data.map(row => row.insulin);
+               const x = data.map(row => row.time);
+         
+         
+               const ctx_insulin = document.getElementById('insulinChart').getContext('2d');
+         
+                new Chart(ctx_insulin, {
+                  type: 'line',
+                  data: {
+                    labels: x,
+                    datasets: [{
+                      label: 'Insulin',
+                      data: y,
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      borderWidth: 1
+                    }]
+                  },
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+             
+             data.forEach(row => {
+               const tr = document.createElement('tr');
+               tr.innerHTML = `
+                 <td>${row.id}</td>
+                 <td>${row.date}</td>
+                 <td>${row.time}</td>
+                 <td>${row.insulin}</td>
+               `;
+               tbody.appendChild(tr);
+         
+             });
+           })
+           .catch(err => {
+             console.error('Error fetching data:', err);
+           });
+         
+         fetch('/food')
+           .then(res => res.json())
+           .then(data => {
+             // const tbody = document.getElementById('data-body');
+         
+               const y = data.map(row => row.food);
+               const x = data.map(row => row.time);
+         
+         
+               const ctx_food = document.getElementById('foodChart').getContext('2d');
+         
+                new Chart(ctx_food, {
+                  type: 'bar',
+                  data: {
+                    labels: x,
+                    datasets: [{
+                      label: 'Food',
+                      data: y,
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      borderWidth: 1
+                    }]
+                  },
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+             
+             data.forEach(row => {
+               const tr = document.createElement('tr');
+               tr.innerHTML = `
+                 <td>${row.id}</td>
+                 <td>${row.date}</td>
+                 <td>${row.time}</td>
+                 <td>${row.food}</td>
+               `;
+               tbody.appendChild(tr);
+         
+             });
+           })
+           .catch(err => {
+             console.error('Error fetching data:', err);
+           });
+         
+           fetch('/food')
+           .then(res => res.json())
+           .then(data => {
+               const y = data.map(row => row.food);
+               const x = data.map(row => row.time);
+         
+         
+               const ctx_food = document.getElementById('foodChart').getContext('2d');
+         
+                new Chart(ctx_food, {
+                  type: 'line',
+                  data: {
+                    labels: x,
+                    datasets: [{
+                      label: 'Food',
+                      data: y,
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      borderWidth: 1
+                    }]
+                  },
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+             
+             data.forEach(row => {
+               const tr = document.createElement('tr');
+               tr.innerHTML = `
+                 <td>${row.id}</td>
+                 <td>${row.date}</td>
+                 <td>${row.time}</td>
+                 <td>${row.food}</td>
+               `;
+               tbody.appendChild(tr);
+         
+             });
+           })
+           .catch(err => {
+             console.error('Error fetching data:', err);
+           });
+         
+           // const ctx = document.getElementById('myChart');
+         
+         // new Chart(ctx, {
+         //   type: 'line',
+         //   data: {
+         //     labels: ['8AM', '9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM', '7PM', '8PM', '9PM', '10PM', '11PM', '12AM'],
+         //     datasets: [{
+         //       label: '# of Votes',
+         //       data: [550, 460, 290, 270, 280, 300],
+         //       borderWidth: 1
+         //     }]
+         //   },
+         //   options: {
+         //     scales: {
+         //       y: {
+         //         beginAtZero: true
+         //       }
+         //     }
+         //   }
+         // });
+         
+         
+         //  async function fetchData() {
+         //    const response = await fetch('/data');
+         //    const data = await response.json();
+         //    return data;
+         //    console.log(data)
+         //  }
+         
+         //  async function createChart() {
+         //    const data = await fetchData();
+         //    const labels = data.map(row => row.label);
+         //    const values = data.map(row => row.value);
+         //    const ctx = document.getElementById('myChart').getContext('2d');
+         
+         //    new Chart(ctx, {
+         //      type: 'line',
+         //      data: {
+         //        labels: labels,
+         //        datasets: [{
+         //          label: 'My Data',
+         //          data: values,
+         //          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+         //          borderColor: 'rgba(75, 192, 192, 1)',
+         //          borderWidth: 1
+         //        }]
+         //      },
+         //      options: {
+         //        scales: {
+         //          y: {
+         //            beginAtZero: true
+         //          }
+         //        }
+         //      }
+         //    });
+         //  }
+         //  createChart();
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   </body>
+</html>
