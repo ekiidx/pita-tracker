@@ -11,11 +11,12 @@
             background-color: #f9f9f9;
             margin: 20px;
         }
-
         h1 {
-            color: #444;
+            margin-bottom: .35rem;
         }
-
+        h2 {
+            margin-bottom: .2rem;
+        }
         form {
             background: #fff;
             padding: 20px;
@@ -23,13 +24,11 @@
             max-width: 500px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         label {
             display: block;
             margin-top: 15px;
             font-weight: bold;
         }
-
         input,
         select,
         textarea {
@@ -39,7 +38,6 @@
             border-radius: 4px;
             border: 1px solid #ccc;
         }
-
         button {
             margin-top: 20px;
             padding: 10px 15px;
@@ -49,11 +47,9 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #45a049;
         }
-
         .modal {
             display: none;
             position: fixed;
@@ -63,13 +59,18 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
         }
-
         .modal-content {
             background-color: white;
             margin: 10% auto;
             padding: 20px;
             width: 300px;
             border-radius: 5px;
+        }
+        td {
+            padding: .3rem;
+        }
+        .entries {
+            margin-bottom: .5rem;
         }
     </style>
 </head>
@@ -128,7 +129,7 @@
         </div>
     </div>
 
-    <div>
+    <div class="entries">
         <h2>Today's Entries</h2>
         <table border="1">
             <thead>
@@ -143,9 +144,7 @@
         </table>
     </div>
 
-    <div>
-        <canvas id="bloodChartToday"></canvas>
-    </div>
+    <div><canvas id="bloodChartToday"></canvas></div>
 
     <script>
         // Tools
@@ -155,7 +154,156 @@
         const day = currentDate.getDate();
         // const isoDate = currentDate.toISOString(); // Example using ISO string for a standard format (YYYY-MM-DDTHH:MM:SS.sssZ)
         const yyyyMmDd = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`; // Example for YYYY-MM-DD format
-        
+
+        window.onload = function() {
+            fetch('/api/entries/' + yyyyMmDd)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('data-body');
+
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.source}</td>
+                            <td>${row.date}</td>
+                            <td>${row.time}</td>
+                            <td>${row.blood}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(err => {
+                    console.error('Error fetching data:', err);
+                });
+
+            async function fetchChartData() {
+                const res_blood = await fetch('/api/blood/' + yyyyMmDd + '');
+                const res_insulin = await fetch('/api/insulin/' + yyyyMmDd + '');
+                const res_food = await fetch('/api/food/' + yyyyMmDd + '');
+                
+                const bloodData = await res_blood.json();
+                const insulinData = await res_insulin.json();
+                const foodData = await res_food.json();
+
+                // Convert backend time strings "HH:mm" to Date objects for chart.js. Date is irrelevant since we only display time axis.
+                const bloodDataPoints = bloodData.map(({
+                    time,
+                    blood
+                }) => {
+                    const [hour, minute] = time.split(':').map(Number);
+                    const date = new Date(2025, 5, 20, hour, minute); // months are 0-indexed in JS
+                    return {
+                        x: date,
+                        y: blood
+                    };
+                });
+                const insulinDataPoints = insulinData.map(({
+                    time,
+                    insulin
+                }) => {
+                    const [hour, minute] = time.split(':').map(Number);
+                    const date = new Date(2025, 5, 20, hour, minute); // months are 0-indexed in JS
+                    return {
+                        x: date,
+                        y: insulin
+                    };
+                });
+                const foodDataPoints = foodData.map(({
+                    time,
+                    food
+                }) => {
+                    const [hour, minute] = time.split(':').map(Number);
+                    const date = new Date(2025, 5, 20, hour, minute); // months are 0-indexed in JS
+                    return {
+                        x: date,
+                        y: food
+                    };
+                });
+
+                const ctxChartToday = document.getElementById('bloodChartToday').getContext('2d');
+                new Chart(ctxChartToday, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'Blood Glucose',
+                            data: bloodDataPoints,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 225, 225, 0)',
+                            fill: true,
+                            tension: 0.4,
+                            parsing: false // because we're using {x, y} objects directly
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Insulin',
+                            data: insulinDataPoints,
+                            borderColor: 'rgba(154, 162, 235, 1)',
+                            backgroundColor: 'rgba(154, 162, 235, 0.6)',
+                            fill: true,
+                            yAxisID: 'y1',
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Food',
+                            data: foodDataPoints,
+                            borderColor: 'rgba(34, 139, 34, 1)',
+                            backgroundColor: 'rgba(34, 139, 34, 0.6)',
+                            fill: true,
+                            yAxisID: 'y1',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        stacked: false,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'hour',
+                                    displayFormats: {
+                                        hour: 'h:mm'
+                                    },
+                                    tooltipFormat: 'h:mm'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Time'
+                                },
+                                min: new Date(2025, 5, 20, 0, 0),
+                                max: new Date(2025, 5, 20, 23, 59)
+                            },
+                            y: {
+                                type: 'linear',
+                                position: 'left',
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Blood Sugar (mg/dL)'
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Food (cups) / Insulin (u)'
+                                },
+                                grid: {
+                                    drawOnChartArea: false
+                                }
+                            }
+                        },
+                        barThickness: 10 
+                    }
+                });
+            }
+            fetchChartData();
+        }
+
         function openBloodModal() {
             document.getElementById("bloodModal").style.display = "block";
         }
@@ -174,154 +322,6 @@
         function closeFoodModal() {
             document.getElementById("foodModal").style.display = "none";
         }
-
-        fetch('/api/entries/' + yyyyMmDd)
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.getElementById('data-body');
-
-                data.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.source}</td>
-                        <td>${row.date}</td>
-                        <td>${row.time}</td>
-                        <td>${row.blood}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            })
-            .catch(err => {
-                console.error('Error fetching data:', err);
-            });
-
-        async function fetchChartData() {
-            const res_blood = await fetch('/api/blood/' + yyyyMmDd + '');
-            const res_insulin = await fetch('/api/insulin/' + yyyyMmDd + '');
-            const res_food = await fetch('/api/food/' + yyyyMmDd + '');
-            
-            const bloodData = await res_blood.json();
-            const insulinData = await res_insulin.json();
-            const foodData = await res_food.json();
-
-            // Convert backend time strings "HH:mm" to Date objects for chart.js
-            // Use today's date + time (date is irrelevant since we only display time axis)
-            const bloodDataPoints = bloodData.map(({
-                time,
-                blood
-            }) => {
-                const [hour, minute] = time.split(':').map(Number);
-                const date = new Date(2025, 5, 20, hour, minute); // months are 0-indexed in JS
-                return {
-                    x: date,
-                    y: blood
-                };
-            });
-            const insulinDataPoints = insulinData.map(({
-                time,
-                insulin
-            }) => {
-                const [hour, minute] = time.split(':').map(Number);
-                const date = new Date(2025, 5, 20, hour, minute); // months are 0-indexed in JS
-                return {
-                    x: date,
-                    y: insulin
-                };
-            });
-            const foodDataPoints = foodData.map(({
-                time,
-                food
-            }) => {
-                const [hour, minute] = time.split(':').map(Number);
-                const date = new Date(2025, 5, 20, hour, minute); // months are 0-indexed in JS
-                return {
-                    x: date,
-                    y: food
-                };
-            });
-
-            const ctxChartToday = document.getElementById('bloodChartToday').getContext('2d');
-            new Chart(ctxChartToday, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'Blood Glucose',
-                        data: bloodDataPoints,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 225, 225, 0)',
-                        fill: true,
-                        tension: 0.4,
-                        parsing: false // because we're using {x, y} objects directly
-                    },
-                    {
-                        type: 'bar',
-                        label: 'Insulin',
-                        data: insulinDataPoints,
-                        borderColor: 'rgba(154, 162, 235, 1)',
-                        backgroundColor: 'rgba(154, 162, 235, 0.6)',
-                        fill: true,
-                        yAxisID: 'y1',
-                    },
-                    {
-                        type: 'bar',
-                        label: 'Food',
-                        data: foodDataPoints,
-                        borderColor: 'rgba(34, 139, 34, 1)',
-                        backgroundColor: 'rgba(34, 139, 34, 0.6)',
-                        fill: true,
-                        yAxisID: 'y1',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    stacked: false,
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'hour',
-                                displayFormats: {
-                                    hour: 'h:mm'
-                                },
-                                tooltipFormat: 'h:mm'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Time'
-                            },
-                            min: new Date(2025, 5, 20, 0, 0),
-                            max: new Date(2025, 5, 20, 23, 59)
-                        },
-                        y: {
-                            type: 'linear',
-                            position: 'left',
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Blood Sugar (mg/dL)'
-                            }
-                        },
-                        y1: {
-                            type: 'linear',
-                            position: 'right',
-                            title: {
-                                display: true,
-                                text: 'Food (cups) / Insulin (u)'
-                            },
-                            grid: {
-                                drawOnChartArea: false
-                            }
-                        }
-                    },
-                    barThickness: 10 
-                }
-            });
-        }
-        fetchChartData();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>

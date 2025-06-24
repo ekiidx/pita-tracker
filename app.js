@@ -1,8 +1,8 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const { parse, format } = require('date-fns');
 // const bodyParser = require('body-parser');
-
 const app = express();
 const port = 3000;
 
@@ -83,9 +83,7 @@ app.get('/api/entries', (req, res) => {
     const finalQuery = `${combinedQuery} ORDER BY date ASC, time ASC`;
     db.all(finalQuery, [], (err, rows) => {
         if (err) {
-            return res.status(500).json({
-                error: err.message
-            });
+            return res.status(500).json({ error: err.message });
         }
         res.json(rows);
     });
@@ -103,11 +101,23 @@ app.get('/api/entries/:date', (req, res) => {
     const finalQuery = `${combinedQuery} ORDER BY date ASC, time ASC`;
     db.all(finalQuery, [date, date, date], (err, rows) => {
 		if (err) {
-            return res.status(500).json({
-                error: err.message
-            });
+            return res.status(500).json({ error: err.message });
         }
-		res.json(rows);
+        // Format time field in each row
+        const formattedRows = rows.map(row => {
+            // Combine date + time for proper parsing (assuming `time` is like '14:30')
+            const fullDateTimeStr = `${row.date}T${row.time}`;
+            const parsed = parse(fullDateTimeStr, 'yyyy-MM-dd\'T\'HH:mm', new Date());
+
+            return {
+                ...row,
+                time: format(parsed, 'h:mm a'),
+                date: format(parsed, 'L/d/yyyy'),
+            };
+        });
+
+        res.json(formattedRows);
+
 	});
 })
 
@@ -115,12 +125,10 @@ app.get('/api/entries/:date', (req, res) => {
 app.get('/api/entries/blood', (req, res) => {
     db.all('SELECT * FROM blood', [], (err, rows) => {
         if (err) {
-            console.error(err.message);
             res.status(500).send('Database error');
             return;
         }
         res.json(rows);
-        res.redirect('back');
     });
 });
 
@@ -131,7 +139,6 @@ app.get('/api/blood/:date', (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         // Return the full array of { time, amount }
         res.json(rows);
-        res.redirect('back');
     });
 });
 
@@ -139,7 +146,6 @@ app.get('/api/blood/:date', (req, res) => {
 app.get('/api/entries/insulin', (req, res) => {
     db.all('SELECT * FROM insulin', [], (err, rows) => {
         if (err) {
-            console.error(err.message);
             res.status(500).send('Database error');
             return;
         }
@@ -154,7 +160,6 @@ app.get('/api/insulin/:date', (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         // Return the full array of { time, amount }
         res.json(rows);
-        res.redirect('back');
     });
 });
 
@@ -162,12 +167,10 @@ app.get('/api/insulin/:date', (req, res) => {
 app.get('/api/entries/food', (req, res) => {
     db.all('SELECT * FROM food', [], (err, rows) => {
         if (err) {
-            console.error(err.message);
             res.status(500).send('Database error');
             return;
         }
         res.json(rows);
-        res.redirect('back');
     });
 });
 
@@ -178,7 +181,6 @@ app.get('/api/food/:date', (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         // Return the full array of { time, amount }
         res.json(rows);
-        res.redirect('back');
     });
 });
 
@@ -202,10 +204,11 @@ app.post('/blood', (req, res) => {
                 error: err.message
             });
         }
-        res.status(201).json({
-            message: 'Blood entry saved successfully',
-            id: this.lastID
-        });
+        res.redirect('/');
+        // res.status(201).json({
+        //     message: 'Blood entry saved successfully',
+        //     id: this.lastID
+        // });
     });
     stmt.finalize();
 });
@@ -229,10 +232,11 @@ app.post('/insulin', (req, res) => {
                 error: err.message
             });
         }
-        res.status(201).json({
-            message: 'Insulin entry saved successfully',
-            id: this.lastID
-        });
+        res.redirect('/');
+        // res.status(201).json({
+        //     message: 'Insulin entry saved successfully',
+        //     id: this.lastID
+        // });
     });
     stmt.finalize();
 });
@@ -244,7 +248,6 @@ app.post('/food', (req, res) => {
         time,
         food
     } = req.body;
-
     if (!date || !time || food === undefined) {
         return res.status(400).json({
             error: 'Missing required fields: date, time, food'
@@ -257,10 +260,11 @@ app.post('/food', (req, res) => {
                 error: err.message
             });
         }
-        res.status(201).json({
-            message: 'Food entry saved successfully',
-            id: this.lastID
-        });
+        res.redirect('/');
+        // res.status(201).json({
+        //     message: 'Food entry saved successfully',
+        //     id: this.lastID
+        // });
     });
     stmt.finalize();
 });
@@ -292,7 +296,8 @@ app.post('/food', (req, res) => {
 //     });
 // });
 
-app.use(express.static('public'));
+// app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 // app.get('/', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 // });
