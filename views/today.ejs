@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pita Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #444;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 300px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Pita Tracker 1.0</h1>
+    <div><canvas id="bloodChart"></canvas></div>
+    <div><canvas id="insulinChart"></canvas></div>
+    <div><canvas id="foodChart"></canvas></div>
+
+    <div>
+        <h2>Today's Readings</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+              
+            </tbody>
+        </table>
+    </div>
+
+    <% blood.forEach(item => { %>
+        <div><%= item.date %></div>
+    <% }) %>
+
+     <% insulin.forEach(item => { %>
+        <div><%= item.insulin %></div>
+    <% }) %>
+
+     <% food.forEach(item => { %>
+        <div><%= item.food %></div>
+    <% }) %>
+
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script>
+      fetch('/api/entries/today')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('data-body');
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                 <td>${row.source}</td>
+                 <td>${row.date}</td>
+                 <td>${row.time}</td>
+                 <td>${row.blood}</td>
+               `;
+                    tbody.appendChild(tr);
+
+                });
+            })
+            .catch(err => {
+                console.error('Error fetching data:', err);
+        });
+    </script>
+</body>
+</html>

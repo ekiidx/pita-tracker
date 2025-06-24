@@ -121,12 +121,37 @@
                 <label for="time">Time of Measurement</label>
                 <input type="time" id="time" name="time" required>
                 <label for="food">Food Amount (in cups)</label>
-                <input type="number" id="food" name="food" min="0" step="0.25" required>
+                <input type="number" id="food" name="food" min="0" required>
                 <button type="submit">Submit</button>
                 <button type="button" onclick="closeFoodModal()">Cancel</button>
             </form>
         </div>
     </div>
+    <script>
+        function openBloodModal() {
+            document.getElementById("bloodModal").style.display = "block";
+        }
+
+        function closeBloodModal() {
+            document.getElementById("bloodModal").style.display = "none";
+        }
+
+        function openInsulinModal() {
+            document.getElementById("insulinModal").style.display = "block";
+        }
+
+        function closeInsulinModal() {
+            document.getElementById("insulinModal").style.display = "none";
+        }
+
+        function openFoodModal() {
+            document.getElementById("foodModal").style.display = "block";
+        }
+
+        function closeFoodModal() {
+            document.getElementById("foodModal").style.display = "none";
+        }
+    </script>
 
     <div>
         <h2>Today's Entries</h2>
@@ -143,38 +168,10 @@
         </table>
     </div>
 
-    <div>
-        <canvas id="bloodChartToday"></canvas>
-    </div>
+    <div><canvas id="bloodChartToday"></canvas></div>
 
     <script>
-        // Tools
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth() + 1; // Add 1 because getMonth() is 0-indexed
-        const day = currentDate.getDate();
-        // const isoDate = currentDate.toISOString(); // Example using ISO string for a standard format (YYYY-MM-DDTHH:MM:SS.sssZ)
-        const yyyyMmDd = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`; // Example for YYYY-MM-DD format
-        
-        function openBloodModal() {
-            document.getElementById("bloodModal").style.display = "block";
-        }
-        function closeBloodModal() {
-            document.getElementById("bloodModal").style.display = "none";
-        }
-        function openInsulinModal() {
-            document.getElementById("insulinModal").style.display = "block";
-        }
-        function closeInsulinModal() {
-            document.getElementById("insulinModal").style.display = "none";
-        }
-        function openFoodModal() {
-            document.getElementById("foodModal").style.display = "block";
-        }
-        function closeFoodModal() {
-            document.getElementById("foodModal").style.display = "none";
-        }
-
+        const yyyyMmDd = "<%= date %>";
         fetch('/api/entries/' + yyyyMmDd)
             .then(res => res.json())
             .then(data => {
