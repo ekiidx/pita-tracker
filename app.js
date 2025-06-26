@@ -72,6 +72,10 @@ app.get('/entries/:date', (req, res) => {
     res.render('entry', { date: date });
 });
 
+// app.get('/entries/back', (req, res) => {
+//     yyyyMmDd
+// })
+
 // API GET all entries
 app.get('/api/entries', (req, res) => {
     const queries = [
@@ -192,25 +196,57 @@ app.post('/blood', (req, res) => {
         blood,
         temp
     } = req.body;
-    if (!date || !time || !blood || !temp) {
-        return res.status(400).json({
-            error: 'Missing required fields: date, time, blood, temp'
-        });
-    }
-    const stmt = db.prepare('INSERT INTO blood (date, time, blood, temp) VALUES (?, ?, ?, ?)');
-    stmt.run([date, time, blood, temp], function(err) {
+
+    db.get(`SELECT id FROM entry WHERE date = ?`, [date], (err, row) => {
         if (err) {
-            return res.status(500).json({
-                error: err.message
+            return console.error('Error checking for entry:', err.message);
+        }
+        if (row) {
+            if (!date || !time || !blood || !temp) {
+                return res.status(400).json({
+                    error: 'Missing required fields: date, time, blood, temp'
+                });
+            }
+            const stmt = db.prepare('INSERT INTO blood (entry_id, date, time, blood, temp) VALUES (?, ?, ?, ?, ?)');
+            stmt.run([row.id, date, time, blood, temp], function(err) {
+                if (err) {
+                    return res.status(500).json({
+                        error: err.message
+                    });
+                }
+                res.redirect('/');
+            });
+            stmt.finalize();
+        } else {
+            const stmt_entry = db.prepare('INSERT INTO entry (date) VALUES (?)');
+            stmt_entry.run([date], function(err) {
+                if (err) {
+                    return res.status(500).json({
+                        error: err.message
+                    });
+                }
+            });
+            db.get(`SELECT id FROM entry WHERE date = ?`, [date], (err, row) => {
+                if (err) {
+                    return console.error('Error checking for entry:', err.message);
+                }
+
+                if (row) {
+                    const stmt = db.prepare('INSERT INTO blood (entry_id, date, time, blood, temp) VALUES (?, ?, ?, ?, ?)');
+                    stmt.run([row.id, date, time, blood, temp], function(err) {
+                        if (err) {
+                            return res.status(500).json({
+                                error: err.message
+                            });
+                        }
+                    });
+                    res.redirect('/');
+                    stmt_entry.finalize();
+                    stmt.finalize();
+                }
             });
         }
-        res.redirect('/');
-        // res.status(201).json({
-        //     message: 'Blood entry saved successfully',
-        //     id: this.lastID
-        // });
     });
-    stmt.finalize();
 });
 
 // CREATE new Insulin
@@ -220,25 +256,57 @@ app.post('/insulin', (req, res) => {
         time,
         insulin
     } = req.body;
-    if (!date || !time || insulin === undefined) {
-        return res.status(400).json({
-            error: 'Missing required fields: date, time, insulin'
-        });
-    }
-    const stmt = db.prepare('INSERT INTO insulin (date, time, insulin) VALUES (?, ?, ?)');
-    stmt.run([date, time, insulin], function(err) {
+
+    db.get(`SELECT id FROM entry WHERE date = ?`, [date], (err, row) => {
         if (err) {
-            return res.status(500).json({
-                error: err.message
+            return console.error('Error checking for entry:', err.message);
+        }
+        if (row) {
+            if (!date || !time || insulin === undefined) {
+                return res.status(400).json({
+                    error: 'Missing required fields: date, time, insulin'
+                });
+            }
+            const stmt = db.prepare('INSERT INTO insulin (entry_id, date, time, insulin) VALUES (?, ?, ?, ?)');
+            stmt.run([row.id, date, time, insulin], function(err) {
+                if (err) {
+                    return res.status(500).json({
+                        error: err.message
+                    });
+                }
+                res.redirect('/');
+            });
+            stmt.finalize();
+        } else {
+            const stmt_entry = db.prepare('INSERT INTO entry (date) VALUES (?)');
+            stmt_entry.run([date], function(err) {
+                if (err) {
+                    return res.status(500).json({
+                        error: err.message
+                    });
+                }
+            });
+             db.get(`SELECT id FROM entry WHERE date = ?`, [date], (err, row) => {
+                if (err) {
+                    return console.error('Error checking for entry:', err.message);
+                }
+
+                if (row) {
+                    const stmt = db.prepare('INSERT INTO insulin (entry_id, date, time, insulin) VALUES (?, ?, ?, ?)');
+                    stmt.run([row.id, date, time, insulin], function(err) {
+                        if (err) {
+                            return res.status(500).json({
+                                error: err.message
+                            });
+                        }
+                    });
+                    res.redirect('/');
+                    stmt_entry.finalize();
+                    stmt.finalize();
+                }
             });
         }
-        res.redirect('/');
-        // res.status(201).json({
-        //     message: 'Insulin entry saved successfully',
-        //     id: this.lastID
-        // });
     });
-    stmt.finalize();
 });
 
 // CREATE new Food
@@ -248,25 +316,57 @@ app.post('/food', (req, res) => {
         time,
         food
     } = req.body;
-    if (!date || !time || food === undefined) {
-        return res.status(400).json({
-            error: 'Missing required fields: date, time, food'
-        });
-    }
-    const stmt = db.prepare('INSERT INTO food (date, time, food) VALUES (?, ?, ?)');
-    stmt.run([date, time, food], function(err) {
+
+    db.get(`SELECT id FROM entry WHERE date = ?`, [date], (err, row) => {
         if (err) {
-            return res.status(500).json({
-                error: err.message
+            return console.error('Error checking for entry:', err.message);
+        }
+        if (row) {
+            if (!date || !time || food === undefined) {
+                return res.status(400).json({
+                    error: 'Missing required fields: date, time, food'
+                });
+            }
+            const stmt = db.prepare('INSERT INTO food (entry_id, date, time, food) VALUES (?, ?, ?, ?)');
+            stmt.run([row.id, date, time, food], function(err) {
+                if (err) {
+                    return res.status(500).json({
+                        error: err.message
+                    });
+                }
+                res.redirect('/');
+            });
+            stmt.finalize();
+        } else {
+            const stmt_entry = db.prepare('INSERT INTO entry (date) VALUES (?)');
+            stmt_entry.run([date], function(err) {
+                if (err) {
+                    return res.status(500).json({
+                        error: err.message
+                    });
+                }
+            });
+            db.get(`SELECT id FROM entry WHERE date = ?`, [date], (err, row) => {
+                if (err) {
+                    return console.error('Error checking for entry:', err.message);
+                }
+
+                if (row) {
+                     const stmt = db.prepare('INSERT INTO food (entry_id, date, time, food) VALUES (?, ?, ?, ?)');
+                    stmt.run([row.id, date, time, food], function(err) {
+                        if (err) {
+                            return res.status(500).json({
+                                error: err.message
+                            });
+                        }
+                    });
+                    res.redirect('/');
+                    stmt_entry.finalize();
+                    stmt.finalize();
+                }
             });
         }
-        res.redirect('/');
-        // res.status(201).json({
-        //     message: 'Food entry saved successfully',
-        //     id: this.lastID
-        // });
     });
-    stmt.finalize();
 });
 
 // API SORT by specific day range with limits

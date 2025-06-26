@@ -146,7 +146,7 @@
     <script>
         const yyyyMmDd = "<%= date %>";
 
-        document.onload = function() {  
+        window.onload = function() {  
             fetch('/api/entries/' + yyyyMmDd)
             .then(res => res.json())
             .then(data => {
@@ -168,9 +168,9 @@
             });
 
             async function fetchChartData() {
-                const res_blood = await fetch('/api/blood/' + yyyyMmDd + '');
-                const res_insulin = await fetch('/api/insulin/' + yyyyMmDd + '');
-                const res_food = await fetch('/api/food/' + yyyyMmDd + '');
+                const res_blood = await fetch('/api/blood/' + yyyyMmDd);
+                const res_insulin = await fetch('/api/insulin/' + yyyyMmDd);
+                const res_food = await fetch('/api/food/' + yyyyMmDd);
                 
                 const bloodData = await res_blood.json();
                 const insulinData = await res_insulin.json();
