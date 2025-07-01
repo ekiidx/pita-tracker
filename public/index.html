@@ -124,7 +124,8 @@
                             <td>${row.date}</td>
                             <td style="min-width: 6rem;">${row.time}</td>
                             <td>${row.blood}</td>
-                            <td style="padding-right: 1.5rem; padding-top: .5rem; padding-bottom: .5rem;"><?xml version="1.0"?><svg style="height: .875rem;" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><path d="M16,10a3,3,0,1,0-3-3A3,3,0,0,0,16,10Z"/><path d="M16,19a3,3,0,1,0-3-3A3,3,0,0,0,16,19Z"/><path d="M16,28a3,3,0,1,0-3-3A3,3,0,0,0,16,28Z"/></svg></td>
+                            <td style="padding-right: 1.5rem; padding-top: .5rem; padding-bottom: .5rem;">
+                                <a href="/entries/${row.id}"><?xml version="1.0"?><svg style="height: .875rem;" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><path d="M16,10a3,3,0,1,0-3-3A3,3,0,0,0,16,10Z"/><path d="M16,19a3,3,0,1,0-3-3A3,3,0,0,0,16,19Z"/><path d="M16,28a3,3,0,1,0-3-3A3,3,0,0,0,16,28Z"/></svg></a></td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -134,13 +135,19 @@
                 });
 
             async function fetchChartData() {
-                const res_blood = await fetch('/api/blood/' + yyyyMmDd + '');
-                const res_insulin = await fetch('/api/insulin/' + yyyyMmDd + '');
-                const res_food = await fetch('/api/food/' + yyyyMmDd + '');
+                const res_blood = await fetch('/api/blood/' + yyyyMmDd);
+                const res_insulin = await fetch('/api/insulin/' + yyyyMmDd);
+                const res_food = await fetch('/api/food/' + yyyyMmDd);
                 
                 const bloodData = await res_blood.json();
                 const insulinData = await res_insulin.json();
                 const foodData = await res_food.json();
+
+                bloodData.sort((a, b) => {
+                    const a_date = new Date(`2025-06-30T${a.time}:00`);
+                    const b_date = new Date(`2025-06-30T${b.time}:00`);
+                    return a_date - b_date;
+                });
 
                 // Convert backend time strings "HH:mm" to Date objects for chart.js. Date is irrelevant since we only display time axis.
                 const bloodDataPoints = bloodData.map(({
