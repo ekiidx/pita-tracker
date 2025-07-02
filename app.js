@@ -79,16 +79,12 @@ app.get('/entries/:date', (req, res) => {
     });
 });
 
-// app.get('/entries/back', (req, res) => {
-//     yyyyMmDd
-// })
-
 // API GET all entries
 app.get('/api/entries', (req, res) => {
     const queries = [
-        `SELECT id, date, time, blood, "🩸 blood" AS source FROM blood`,
-        `SELECT id, date, time, insulin, "💉 insulin" AS source FROM insulin`,
-        `SELECT id, date, time, food, "🍽️ food" AS source FROM food`
+        `SELECT id, date, time, blood, '🩸' AS source FROM blood`,
+        `SELECT id, date, time, insulin, '💉' AS source FROM insulin`,
+        `SELECT id, date, time, food, '🍽️' AS source FROM food`
     ];
     const combinedQuery = queries.join(' UNION ALL ');
     const finalQuery = `${combinedQuery} ORDER BY date ASC, time ASC`;
@@ -101,16 +97,15 @@ app.get('/api/entries', (req, res) => {
     });
 });
 
-
 // API GET all entries on specific day
 app.get('/api/entries/:date', (req, res) => {
     const {
         date
     } = req.params;
     const queries = [
-        `SELECT id, date, time, blood, 'blood' as source FROM blood WHERE date = ? `,
-        `SELECT id, date, time, insulin, 'insulin' as source FROM insulin WHERE date = ? `,
-        `SELECT id, date, time, food, 'food' as source FROM food WHERE date = ? `
+        `SELECT id, date, time, blood, '🩸' as source FROM blood WHERE date = ? `,
+        `SELECT id, date, time, insulin, '💉' as source FROM insulin WHERE date = ? `,
+        `SELECT id, date, time, food, '🍽️' as source FROM food WHERE date = ? `
     ];
     const combinedQuery = queries.join(' UNION ALL ');
     const finalQuery = `${combinedQuery} ORDER BY date ASC, time ASC`;
@@ -132,9 +127,7 @@ app.get('/api/entries/:date', (req, res) => {
                 date: format(parsed, 'L/d/yyyy'),
             };
         });
-
         res.json(formattedRows);
-
     });
 })
 
@@ -150,11 +143,25 @@ app.get('/api/entries/blood', (req, res) => {
 });
 
 // API GET Blood entries for a specific day
-app.get('/api/blood/:date', (req, res) => {
+app.get('/api/blood/date/:date', (req, res) => {
     const {
         date
     } = req.params;
     db.all(`SELECT time, blood FROM blood WHERE date = ?`, [date], (err, rows) => {
+        if (err) return res.status(500).json({
+            error: err.message
+        });
+        // Return the full array of { time, amount }
+        res.json(rows);
+    });
+});
+
+// API GET specific Blood entry
+app.get('/api/blood/:id', (req, res) => {
+    const {
+        id
+    } = req.params;
+    db.all(`SELECT date, time, blood, temp FROM blood WHERE id = ?`, [id], (err, rows) => {
         if (err) return res.status(500).json({
             error: err.message
         });
@@ -175,11 +182,25 @@ app.get('/api/entries/insulin', (req, res) => {
 });
 
 // API GET Insulin entries for a specific day
-app.get('/api/insulin/:date', (req, res) => {
+app.get('/api/insulin/date/:date', (req, res) => {
     const {
         date
     } = req.params;
     db.all(`SELECT time, insulin FROM insulin WHERE date = ?`, [date], (err, rows) => {
+        if (err) return res.status(500).json({
+            error: err.message
+        });
+        // Return the full array of { time, amount }
+        res.json(rows);
+    });
+});
+
+// API GET specific Insulin entry
+app.get('/api/insulin/:id', (req, res) => {
+    const {
+        id
+    } = req.params;
+    db.all(`SELECT date, time, insulin FROM insulin WHERE id = ?`, [id], (err, rows) => {
         if (err) return res.status(500).json({
             error: err.message
         });
@@ -200,7 +221,7 @@ app.get('/api/entries/food', (req, res) => {
 });
 
 // API GET Food entries for a specific day
-app.get('/api/food/:date', (req, res) => {
+app.get('/api/food/date/:date', (req, res) => {
     const {
         date
     } = req.params;
@@ -213,7 +234,21 @@ app.get('/api/food/:date', (req, res) => {
     });
 });
 
-// CREATE new Blood
+// API GET specific Food entry
+app.get('/api/food/:id', (req, res) => {
+    const {
+        id
+    } = req.params;
+    db.all(`SELECT date, time, food FROM food WHERE id = ?`, [id], (err, rows) => {
+        if (err) return res.status(500).json({
+            error: err.message
+        });
+        // Return the full array of { time, amount }
+        res.json(rows);
+    });
+});
+
+// CREATE blood entry
 app.post('/blood', (req, res) => {
     const {
         date,
@@ -274,7 +309,29 @@ app.post('/blood', (req, res) => {
     });
 });
 
-// CREATE new Insulin
+// UPDATE blood entry
+app.post('/blood/edit/:id', (req, res) => {
+    const { id } = req.params;
+    const { date, time, blood, temp } = req.body;
+
+    const sql = `UPDATE blood SET date = ?, time = ?, blood = ?, temp = ? WHERE id = ?`;
+    db.run(sql, [date, time, blood, temp, id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+       res.redirect('/');
+    });
+});
+
+// DELETE blood entry
+app.post('/blood/delete/:id', (req, res) => {
+    const { id } = req.params;
+
+    db.run(`DELETE FROM blood WHERE id = ?`, [id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.redirect('/');
+    });
+});
+
+// CREATE insulin entry
 app.post('/insulin', (req, res) => {
     const {
         date,
@@ -334,7 +391,29 @@ app.post('/insulin', (req, res) => {
     });
 });
 
-// CREATE new Food
+// UPDATE insulin entry
+app.post('/insulin/edit/:id', (req, res) => {
+    const { id } = req.params;
+    const { date, time, insulin } = req.body;
+
+    const sql = `UPDATE insulin SET date = ?, time = ?, insulin = ? WHERE id = ?`;
+    db.run(sql, [date, time, insulin, id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+       res.redirect('/');
+    });
+});
+
+// DELETE insulin entry
+app.delete('/insulin/delete/:id', (req, res) => {
+    const { id } = req.params;
+
+    db.run(`DELETE FROM insulin WHERE id = ?`, [id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+       res.redirect('/');
+    });
+});
+
+// CREATE food entry
 app.post('/food', (req, res) => {
     const {
         date,
@@ -393,6 +472,29 @@ app.post('/food', (req, res) => {
         }
     });
 });
+
+// UPDATE food entry
+app.post('/food/edit/:id', (req, res) => {
+    const { id } = req.params;
+    const { date, time, food } = req.body;
+
+    const sql = `UPDATE food SET date = ?, time = ?, food = ? WHERE id = ?`;
+    db.run(sql, [date, time, food, id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+       res.redirect('/');
+    });
+});
+
+// DELETE food entry
+app.post('/food/delete/:id', (req, res) => {
+    const { id } = req.params;
+
+    db.run(`DELETE FROM food WHERE id = ?`, [id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+       res.redirect('/');
+    });
+});
+
 
 // API SORT by specific day range with limits
 // app.get('/api/entries/data-by-date', (req, res) => {
