@@ -404,7 +404,7 @@ app.post('/insulin/edit/:id', (req, res) => {
 });
 
 // DELETE insulin entry
-app.delete('/insulin/delete/:id', (req, res) => {
+app.post('/insulin/delete/:id', (req, res) => {
     const { id } = req.params;
 
     db.run(`DELETE FROM insulin WHERE id = ?`, [id], function(err) {
