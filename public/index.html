@@ -129,9 +129,10 @@
         </div>
 
         <main class="min-h-[calc(100svh-6.82rem)] bg-[#f0f0f0]">
-            <section class="grid gap-4 p-4 grid-cols-3">
 
-                <article class="col-span-1">
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 ">
+
+                <article class="lg:col-span-1">
                     <div class="rounded-lg bg-[#ffffff]">
                         <div class="flex p-6 flex-row justify-between items-center gap-x-1.5 space-y-0">
                             <h2 class="font-semibold leading-none tracking-tight">Entries</h2>
@@ -148,83 +149,81 @@
                         <div class="p-0">
                             <div dir="ltr" class="relative overflow-hidden w-[calc(100vw-2rem)] md:w-auto --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;">
                                 <div class="h-full w-full rounded-[inherit]" style="overflow: scroll hidden;">
-                                    <div style="min-width: 100%; display: table;">
-                                        <div class="relative w-full overflow-auto">
+                                    <div class="relative w-full overflow-auto">
 
-                                            <table class="w-full caption-bottom text-sm overflow-hidden">
-                                                <thead class="border-b">
-                                                    <tr class="border-b">
-                                                        <th class="h-10 px-2 text-start align-middle font-medium">
-                                                            <div class="flex items-center gap-x-2 ms-4">
-                                                                <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8" type="button" aria-haspopup="menu" aria-expanded="false">
-                                                                    <span>Type</span>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
-                                                                        <path d="m3 16 4 4 4-4"></path>
-                                                                        <path d="M7 20V4"></path>
-                                                                        <path d="m21 8-4-4-4 4"></path>
-                                                                        <path d="M17 4v16"></path>
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </th>
-                                                        <th class="h-10 px-2 text-start align-middle font-medium">
-                                                            <div class="flex items-center gap-x-2">
-                                                                <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8" type="button" aria-haspopup="menu" aria-expanded="false">
-                                                                    <span>Date</span>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
-                                                                        <path d="m3 16 4 4 4-4"></path>
-                                                                        <path d="M7 20V4"></path>
-                                                                        <path d="m21 8-4-4-4 4"></path>
-                                                                        <path d="M17 4v16"></path>
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </th>
-                                                        <th class="h-10 px-2 text-start align-middle font-medium">
-                                                            <div class="flex items-center gap-x-2">
-                                                                <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8 data-[state=open]:bg-accent" type="button" aria-haspopup="menu" aria-expanded="false">
-                                                                    <span>Time</span>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
-                                                                        <path d="m3 16 4 4 4-4"></path>
-                                                                        <path d="M7 20V4"></path>
-                                                                        <path d="m21 8-4-4-4 4"></path>
-                                                                        <path d="M17 4v16"></path>
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </th>
-                                                        <th class="h-10 px-2 text-start align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pe-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px]">
-                                                            <div class="flex items-center gap-x-2">
-                                                                <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8 data-[state=open]:bg-accent" type="button" aria-haspopup="menu" aria-expanded="false">
-                                                                    <span>Amount</span>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
-                                                                        <path d="m3 16 4 4 4-4"></path>
-                                                                        <path d="M7 20V4"></path>
-                                                                        <path d="m21 8-4-4-4 4"></path>
-                                                                        <path d="M17 4v16"></path>
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </th>
-                                                        <th data-slot="table-head" class="h-10 px-2 text-start align-middle font-medium">
-                                                            <div class="flex items-center gap-x-2">
-                                                                <!-- <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8 data-[state=open]:bg-accent" type="button" aria-haspopup="menu" aria-expanded="false">
-                                                                    <span></span>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
-                                                                        <path d="m3 16 4 4 4-4"></path>
-                                                                        <path d="M7 20V4"></path>
-                                                                        <path d="m21 8-4-4-4 4"></path>
-                                                                        <path d="M17 4v16"></path>
-                                                                    </svg>
-                                                                </button> -->
-                                                            </div>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody data-slot="table-body" class="[&amp;_tr:last-child]:border-0" id="data-body">
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                        <table class="w-full caption-bottom text-sm overflow-hidden">
+                                            <thead class="border-b">
+                                                <tr class="border-b">
+                                                    <th class="h-10 px-2 text-start align-middle font-medium">
+                                                        <div class="flex items-center gap-x-2 ms-4">
+                                                            <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8" type="button" aria-haspopup="menu" aria-expanded="false">
+                                                                <span>Type</span>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
+                                                                    <path d="m3 16 4 4 4-4"></path>
+                                                                    <path d="M7 20V4"></path>
+                                                                    <path d="m21 8-4-4-4 4"></path>
+                                                                    <path d="M17 4v16"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </th>
+                                                    <th class="h-10 px-2 text-start align-middle font-medium">
+                                                        <div class="flex items-center gap-x-2">
+                                                            <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8" type="button" aria-haspopup="menu" aria-expanded="false">
+                                                                <span>Date</span>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
+                                                                    <path d="m3 16 4 4 4-4"></path>
+                                                                    <path d="M7 20V4"></path>
+                                                                    <path d="m21 8-4-4-4 4"></path>
+                                                                    <path d="M17 4v16"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </th>
+                                                    <th class="h-10 px-2 text-start align-middle font-medium">
+                                                        <div class="flex items-center gap-x-2">
+                                                            <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8 data-[state=open]:bg-accent" type="button" aria-haspopup="menu" aria-expanded="false">
+                                                                <span>Time</span>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
+                                                                    <path d="m3 16 4 4 4-4"></path>
+                                                                    <path d="M7 20V4"></path>
+                                                                    <path d="m21 8-4-4-4 4"></path>
+                                                                    <path d="M17 4v16"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </th>
+                                                    <th class="h-10 px-2 text-start align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pe-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px]">
+                                                        <div class="flex items-center gap-x-2">
+                                                            <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8 data-[state=open]:bg-accent" type="button" aria-haspopup="menu" aria-expanded="false">
+                                                                <span>Amount</span>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
+                                                                    <path d="m3 16 4 4 4-4"></path>
+                                                                    <path d="M7 20V4"></path>
+                                                                    <path d="m21 8-4-4-4 4"></path>
+                                                                    <path d="M17 4v16"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </th>
+                                                    <th data-slot="table-head" class="h-10 px-2 text-start align-middle font-medium">
+                                                        <div class="flex items-center gap-x-2">
+                                                            <!-- <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground rounded-md px-3 text-xs cursor-pointer -ms-3 h-8 data-[state=open]:bg-accent" type="button" aria-haspopup="menu" aria-expanded="false">
+                                                                <span></span>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-up ms-2 size-3">
+                                                                    <path d="m3 16 4 4 4-4"></path>
+                                                                    <path d="M7 20V4"></path>
+                                                                    <path d="m21 8-4-4-4 4"></path>
+                                                                    <path d="M17 4v16"></path>
+                                                                </svg>
+                                                            </button> -->
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="data-body">
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +231,7 @@
                     </div>
                 </article>
 
-                <article class="col-span-2">
+                <article class="lg:col-span-2">
                     <div class="rounded-lg bg-[#ffffff]">
                         <div class="flex p-6 flex-row justify-between items-center gap-x-1.5 space-y-0">
                             <h2 class="font-semibold leading-none tracking-tight">Blood Chart</h2>
@@ -276,6 +275,7 @@
         const day = currentDate.getDate();
         // const isoDate = currentDate.toISOString(); // Example using ISO string for a standard format (YYYY-MM-DDTHH:MM:SS.sssZ)
         const yyyyMmDd = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`; // Example for YYYY-MM-DD format
+        var myChart;
 
         window.onload = function() {
             fetch('/api/entries/' + yyyyMmDd)
@@ -288,7 +288,7 @@
                     tr.innerHTML = `
                         <td style="padding-left: 1.5rem;">${row.source}</td>
                         <td>${row.date}</td>
-                        <td style="min-width: 6rem;">${row.time}</td>
+                        <td style="min-width: 5rem;">${row.time}</td>
                         <td>${row.blood}</td>
                         <td style="padding-right: 1.5rem; padding-top: .5rem; padding-bottom: .5rem;">
                             <span class="btn-edit" onclick="editModal('${row.id}', '${row.source}')"><?xml version="1.0"?><svg style="height: .875rem;" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title/><path d="M16,10a3,3,0,1,0-3-3A3,3,0,0,0,16,10Z"/><path d="M16,19a3,3,0,1,0-3-3A3,3,0,0,0,16,19Z"/><path d="M16,28a3,3,0,1,0-3-3A3,3,0,0,0,16,28Z"/></svg></span></td>
@@ -351,7 +351,7 @@
                 });
 
                 const ctxChartToday = document.getElementById('bloodChartToday').getContext('2d');
-                new Chart(ctxChartToday, {
+                myChart = new Chart(ctxChartToday, {
                     type: 'line',
                     data: {
                         datasets: [{
@@ -384,6 +384,7 @@
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: true,
                         interaction: {
                             mode: 'index',
                             intersect: false,
@@ -433,6 +434,11 @@
             }
             fetchChartData();
         }
+        // Resize chart on window resize
+        window.addEventListener('resize', () => {
+            myChart.resize();
+            console.log("reload");
+        });
 
         function openBloodModal() {
             document.getElementById("bloodModal").style.display = "block";

@@ -88,7 +88,7 @@ textarea {
     border-radius: 5px;
 }
 table {
-    width: 100%;
+    /* width: 100%; */
     border: none;
     border-collapse: collapse;
     padding-top: 1.5rem;
@@ -114,10 +114,10 @@ td {
 td:nth-child(-n + 1) {
     margin-left: .5rem;
 }
-.entries {
+/* .entries {
     margin-bottom: .5rem;
     width: 50%;
-}
+} */
 /* .entries-header {
     display: flex;
     justify-content: space-between;
@@ -151,6 +151,7 @@ td:nth-child(-n + 1) {
     justify-content: space-between;
 }
 .graph-content {
-    width: 100%;
     padding-left: 1rem;
+    padding-right: 1rem;
+    height: 100%;
 }
