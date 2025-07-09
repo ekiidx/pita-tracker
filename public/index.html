@@ -301,9 +301,9 @@
             });
 
             async function fetchChartData() {
-                const res_blood = await fetch('/api/blood/date/' + yyyyMmDd);
-                const res_insulin = await fetch('/api/insulin/date/' + yyyyMmDd);
-                const res_food = await fetch('/api/food/date/' + yyyyMmDd);
+                const res_blood = await fetch('/api/blood/' + yyyyMmDd);
+                const res_insulin = await fetch('/api/insulin/' + yyyyMmDd);
+                const res_food = await fetch('/api/food/' + yyyyMmDd);
                 
                 const bloodData = await res_blood.json();
                 const insulinData = await res_insulin.json();
@@ -437,7 +437,6 @@
         // Resize chart on window resize
         window.addEventListener('resize', () => {
             myChart.resize();
-            console.log("reload");
         });
 
         function openBloodModal() {

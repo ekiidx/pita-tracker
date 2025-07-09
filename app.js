@@ -85,7 +85,6 @@ app.get('/api/entries', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        console.log(rows); // Check if emojis show up here
         res.json(rows);
     });
 });
@@ -94,34 +93,42 @@ app.get('/api/entries', (req, res) => {
 app.get('/api/entries/:date', (req, res) => {
     const { date } = req.params;
     const queries = [
-        `SELECT id, date, time, blood, '🩸' as source FROM blood WHERE date = ? `,
-        `SELECT id, date, time, insulin, '💊' as source FROM insulin WHERE date = ? `,
-        `SELECT id, date, time, food, '🍗' as source FROM food WHERE date = ? `
+        `SELECT id, date, time, blood, '🩸' as source FROM blood WHERE date = ? AND time IS NOT NULL AND time != ''`,
+        `SELECT id, date, time, insulin, '💊' as source FROM insulin WHERE date = ? AND time IS NOT NULL AND time != ''`,
+        `SELECT id, date, time, food, '🍗' as source FROM food WHERE date = ? AND time IS NOT NULL AND time != ''`
     ];
     const combinedQuery = queries.join(' UNION ALL ');
-    const finalQuery = `${combinedQuery} ORDER BY date ASC, time ASC`;
+    const finalQuery = `${combinedQuery} ORDER BY time ASC`;
     db.all(finalQuery, [date, date, date], (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        // Format time field in each row
-        const formattedRows = rows.map(row => {
-            // Combine date + time for proper parsing (assuming `time` is like '14:30')
-            const fullDateTimeStr = `${row.date}T${row.time}`;
-            const parsed = parse(fullDateTimeStr, 'yyyy-MM-dd\'T\'HH:mm', new Date());
+        if (!Array.isArray(rows)) {
+            return res.status(500).json({ error: 'Unexpected result from database' });
+        }
 
-            return {
-                ...row,
-                time: format(parsed, 'h:mm a'),
-                date: format(parsed, 'L/d/yyyy'),
-            };
+        const formattedRows = rows.map(row => {
+            try {
+                const fullDateTimeStr = `${row.date}T${row.time}`;
+                const parsed = parse(fullDateTimeStr, "yyyy-MM-dd'T'HH:mm", new Date());
+
+                return {
+                    ...row,
+                    time: format(parsed, 'h:mm a'),
+                    date: format(parsed, 'L/d/yyyy'),
+                };
+            } catch (parseErr) {
+                console.error('⛔ Error parsing row:', row, parseErr);
+                return row; // Or skip / adjust as needed
+            }
         });
         res.json(formattedRows);
     });
-})
+});
+
 
 // API GET all Blood entries
-app.get('/api/entries/blood', (req, res) => {
+app.get('/api/blood', (req, res) => {
     db.all('SELECT * FROM blood', [], (err, rows) => {
         if (err) {
            return res.status(500).json({ error: err.message });
@@ -131,9 +138,11 @@ app.get('/api/entries/blood', (req, res) => {
 });
 
 // API GET Blood entries for a specific day
-app.get('/api/blood/date/:date', (req, res) => {
+app.get('/api/blood/:date', (req, res) => {
     const { date } = req.params;
-    db.all(`SELECT time, blood FROM blood WHERE date = ?`, [date], (err, rows) => {
+    const query = `SELECT time, blood FROM blood WHERE date = ?`;
+    const finalQuery = `${query} ORDER BY time ASC`;
+    db.all(finalQuery, [date], (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -153,7 +162,7 @@ app.get('/api/blood/:id', (req, res) => {
 });
 
 // API GET all Insulin entries
-app.get('/api/entries/insulin', (req, res) => {
+app.get('/api/insulin', (req, res) => {
     db.all('SELECT * FROM insulin', [], (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -163,9 +172,11 @@ app.get('/api/entries/insulin', (req, res) => {
 });
 
 // API GET Insulin entries for a specific day
-app.get('/api/insulin/date/:date', (req, res) => {
+app.get('/api/insulin/:date', (req, res) => {
     const { date } = req.params;
-    db.all(`SELECT time, insulin FROM insulin WHERE date = ?`, [date], (err, rows) => {
+    const query = `SELECT time, insulin FROM insulin WHERE date = ?`;
+    const finalQuery = `${query} ORDER BY time ASC`;
+    db.all(finalQuery, [date], (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -185,7 +196,7 @@ app.get('/api/insulin/:id', (req, res) => {
 });
 
 // API GET all Food entries
-app.get('/api/entries/food', (req, res) => {
+app.get('/api/food', (req, res) => {
     db.all('SELECT * FROM food', [], (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -195,9 +206,11 @@ app.get('/api/entries/food', (req, res) => {
 });
 
 // API GET Food entries for a specific day
-app.get('/api/food/date/:date', (req, res) => {
+app.get('/api/food/:date', (req, res) => {
     const { date } = req.params;
-    db.all(`SELECT time, food FROM food WHERE date = ?`, [date], (err, rows) => {
+    const query = `SELECT time, food FROM food WHERE date = ?`;
+    const finalQuery = `${query} ORDER BY time ASC`;
+    db.all(finalQuery, [date], (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
