@@ -138,7 +138,7 @@ app.get('/api/blood', (req, res) => {
 });
 
 // API GET Blood entries for a specific day
-app.get('/api/blood/:date', (req, res) => {
+app.get('/api/blood/date/:date', (req, res) => {
     const { date } = req.params;
     const query = `SELECT time, blood FROM blood WHERE date = ?`;
     const finalQuery = `${query} ORDER BY time ASC`;
@@ -172,7 +172,7 @@ app.get('/api/insulin', (req, res) => {
 });
 
 // API GET Insulin entries for a specific day
-app.get('/api/insulin/:date', (req, res) => {
+app.get('/api/insulin/date/:date', (req, res) => {
     const { date } = req.params;
     const query = `SELECT time, insulin FROM insulin WHERE date = ?`;
     const finalQuery = `${query} ORDER BY time ASC`;
@@ -206,7 +206,7 @@ app.get('/api/food', (req, res) => {
 });
 
 // API GET Food entries for a specific day
-app.get('/api/food/:date', (req, res) => {
+app.get('/api/food/date/:date', (req, res) => {
     const { date } = req.params;
     const query = `SELECT time, food FROM food WHERE date = ?`;
     const finalQuery = `${query} ORDER BY time ASC`;

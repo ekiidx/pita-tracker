@@ -91,7 +91,7 @@
                     <input type="number" step="0.1" id="insulinEditInsulin" name="insulin">
                     <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2" type="submit">Submit</button>
                     <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2" type="button" onclick="closeModal()">Cancel</button>
-                    <button class="btn-delete inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2" type="button" onclick="deleteInsuin()">Delete</button>
+                    <button class="btn-delete inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2" type="button" onclick="deleteInsulin()">Delete</button>
                 </form>
             </div>
         </div>
@@ -294,9 +294,9 @@
             });
 
             async function fetchChartData() {
-                const res_blood = await fetch('/api/blood/' + yyyyMmDd);
-                const res_insulin = await fetch('/api/insulin/' + yyyyMmDd);
-                const res_food = await fetch('/api/food/' + yyyyMmDd);
+                const res_blood = await fetch('/api/blood/date/' + yyyyMmDd);
+                const res_insulin = await fetch('/api/insulin/date/' + yyyyMmDd);
+                const res_food = await fetch('/api/food/date/' + yyyyMmDd);
                 
                 const bloodData = await res_blood.json();
                 const insulinData = await res_insulin.json();
@@ -471,7 +471,6 @@
             fetch('/api/blood/' + id)
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 data.forEach(row => {
                     edit_date.value = row.date;
                     edit_time.value = row.time;
@@ -487,19 +486,18 @@
                 console.error('Error fetching data:', err);
             });
         }
-        function deleteBlood(id) {
+        function deleteBlood() {
             const idInput = document.getElementById("bloodEditId");
             const idValue = idInput.value;
-
-            if (!confirm("Are you sure you want to delete this entry?")) return;
-
+            if (!confirm("Are you sure you want to delete this entry?")) {
+                return;
+            }
             fetch('/blood/delete/' + idValue, {
                 method: 'POST'
             })
             .then(res => {
                 if (res.ok) {
-                    // Refresh or remove row from UI
-                    window.location.reload(); // or a more dynamic update
+                    window.location.reload();
                 } else {
                     return res.text().then(msg => { throw new Error(msg); });
                 }
@@ -541,19 +539,18 @@
                 console.error('Error fetching data:', err);
             });
         }
-        function deleteInsulin(id) {
+        function deleteInsulin() {
             const idInput = document.getElementById("insulinEditId");
             const idValue = idInput.value;
-
-            if (!confirm("Are you sure you want to delete this entry?")) return;
-
+            if (!confirm("Are you sure you want to delete this entry?")) {
+                return;
+            } 
             fetch('/insulin/delete/' + idValue, {
                 method: 'POST'
             })
             .then(res => {
                 if (res.ok) {
-                    // Refresh or remove row from UI
-                    window.location.reload(); // or a more dynamic update
+                    window.location.reload();
                 } else {
                     return res.text().then(msg => { throw new Error(msg); });
                 }
@@ -594,21 +591,18 @@
                 console.error('Error fetching data:', err);
             });
         }
-        function deleteFood(id) {
+        function deleteFood() {
             const idInput = document.getElementById("foodEditId");
             const idValue = idInput.value;
-
             if (!confirm("Are you sure you want to delete this entry?")) {
                 return;
             }
-
             fetch('/food/delete/' + idValue, {
                 method: 'POST'
             })
             .then(res => {
                 if (res.ok) {
-                    // Refresh or remove row from UI
-                    window.location.reload(); // or a more dynamic update
+                    window.location.reload();
                 } else {
                     return res.text().then(msg => { throw new Error(msg); });
                 }
